@@ -52,8 +52,7 @@ export default function Dashboard() {
 
     fetchUnread();
   }, [currentUser]);
-
-  useEffect(() => {
+   useEffect(() => {
     if (uploadStatus) {
       const timer = setTimeout(() => setUploadStatus(""), 3000);
       return () => clearTimeout(timer);
@@ -67,43 +66,11 @@ export default function Dashboard() {
       if (res.ok) setPosts(data.posts);
     } catch (err) {
       console.error("Failed to fetch posts:", err);
-      setGlobalError("❌ Failed to load posts. Please try again later.");
     }
   };
 
-  const handlePostSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!imageFile) {
-      setUploadStatus("❌ Please select an image.");
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.append("user", userName);
-      formData.append("description", description);
-      formData.append("image", imageFile);
-
-      const res = await fetch("/api/posts", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (res.ok) {
-        setDescription("");
-        setImageFile(null);
-        setShowPostModal(false);
-        fetchPosts();
-        setTimeout(() => setUploadStatus("✅ Post uploaded!"), 300);
-      } else {
-        setUploadStatus(`❌ Error: ${data.error}`);
-      }
-    } catch (error) {
-      console.error("Post upload error:", error);
-      setUploadStatus("❌ Failed to upload. Please try again later.");
-    }
-  };
+  
+  
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,6 +91,34 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Feedback error:", error);
       setFeedbackStatus("❌ Something went wrong. Please try again later.");
+    }
+  };
+   const handlePostSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!imageFile) {
+      setUploadStatus("❌ Please select an image.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("user", userName);
+    formData.append("description", description);
+    formData.append("image", imageFile);
+
+    const res = await fetch("/api/posts", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      setDescription("");
+      setImageFile(null);
+      setShowPostModal(false);
+      fetchPosts();
+      setTimeout(() => setUploadStatus("✅ Post uploaded!"), 300);
+    } else {
+      setUploadStatus(`❌ Error: ${data.error}`);
     }
   };
 
@@ -179,14 +174,95 @@ export default function Dashboard() {
           <PlusIcon className="h-6 w-6" />
         </button>
 
-        {/* View Feeds Button */}
+        {/* ➕ Add Post Button */}
         <button
-          onClick={() => setShowFeedModal(true)}
-          className="fixed top-4 sm:top-6 right-40 sm:right-[11rem] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-xl shadow-lg flex items-center gap-2 transition duration-300 ease-in-out z-[60]"
+          onClick={() => setShowPostModal(true)}
+          className="fixed top-6 right-24 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg flex items-center transition z-50"
+          title="Add Post"
         >
-          <NewspaperIcon className="h-5 w-5" />
-          <span className="text-sm font-medium">View Feeds</span>
+          <PlusIcon className="h-6 w-6" />
         </button>
+          {/* 📰 Aesthetic Feeds Button */}
+<button
+  onClick={() => setShowFeedModal(true)}
+  className="fixed top-6 right-[11rem] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-xl shadow-lg flex items-center gap-2 transition duration-300 ease-in-out z-50"
+  title="View Feeds"
+>
+  <NewspaperIcon className="h-5 w-5" />
+  <span className="text-sm font-medium">View Feeds</span>
+</button>
+ {/* ✅ Upload Success Message */}
+        {uploadStatus && (
+          <div className="fixed bottom-24 right-6 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg shadow z-50">
+            {uploadStatus}
+          </div>
+        )}
+        {/* 🖼️ Post Modal */}
+        {showPostModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">📸 Create a Post</h2>
+                <button onClick={() => setShowPostModal(false)} title="Close">
+                  <XMarkIcon className="h-6 w-6 text-gray-500 hover:text-red-500" />
+                </button>
+              </div>
+              <form onSubmit={handlePostSubmit} className="space-y-4">
+                <input
+                  type="file"
+                  onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                  className="w-full border border-gray-300 p-2 rounded text-gray-700 bg-white"
+                  required
+                />
+                {imageFile && (
+                  <p className="text-sm text-gray-500 mt-1">Selected: {imageFile.name}</p>
+                )}
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Description"
+                  className="w-full p-3 border border-gray-300 rounded text-gray-800 bg-white placeholder-gray-400"
+                  rows={3}
+                  required
+                />
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl transition"
+                >
+                  Upload Post
+                </button>
+              </form>
+            </div>
+          </div>
+        )} 
+        {/* 📰 Feeds Modal */}
+        {showFeedModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-2xl h-[80vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">📰 All Posts</h2>
+                <button onClick={() => setShowFeedModal(false)} title="Close">
+                  <XMarkIcon className="h-6 w-6 text-gray-500 hover:text-red-500" />
+                </button>
+              </div>
+              {posts.length === 0 ? (
+                <p className="text-gray-500">No posts yet.</p>
+              ) : (
+                posts.map((post, idx) => (
+                  <div key={idx} className="mb-6 bg-gray-50 p-4 rounded-lg shadow">
+                    <img
+                      src={`/uploads/${post.imagePath}`}
+                      alt="Post"
+                      className="w-full h-56 object-cover rounded mb-2"
+                    />
+                    <p className="text-gray-800">{post.description}</p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
 
         {/* Dark Mode Toggle */}
         <button
