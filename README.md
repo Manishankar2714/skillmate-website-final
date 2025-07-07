@@ -66,8 +66,8 @@ skillmate api server need to be setup in separate directory
 1. **Clone the repo**
 
 ```bash
-git clone https:https://github.com/Manishankar2714/skillmate-website.git
-cd skillmate-website
+git clone https:https://github.com/Manishankar2714/skillmate-website-final.git
+cd skillmate-website-final
 npm install
 
 .env.local
