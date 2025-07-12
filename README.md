@@ -40,27 +40,50 @@
 ## 📁 Folder Structure
 
 skillmate-website/
-├── pages/
-│ ├── index.tsx # Landing page
-│ ├── dashboard.tsx # Authenticated user dashboard
-│ ├── api/
-│ │ ├── posts.js # Handles post upload/view APIs
-│ │ └── auth/[...nextauth].js # Auth config
-├── components/
-│ ├── Sidebar.js
-│ ├── UserCard.js
-│ └── ProfileProgress.js
++---pages #pages in skillmate website
+|   |   articles.tsx
+|   |   dashboard.tsx
+|   |   debug.tsx
+|   |   error.js
+|   |   index.tsx
+|   |   people.tsx
+|   |   _app.tsx
+|   |   
+|   \---api
+|       |   messages.js
+|       |   posts.js
+|       |   users.js
+|       |   
+|       +---auth
+|       |       
+|       \---user
+|middleware.ts #Middleware is used to run custom logic between a request and a response in web applications
++---components/
+│   | Sidebar.js
+│   |chatwindows.tsx
+    |notificationbell.tsx
+    |sidebar.js
+    |statschart.tsx
+
+
++---public # Uploaded images stored here
+|   |   favicon.ico
+|   \---uploads         
+\---styles
+        globals.css      
 ├── lib/
 │ ├── mongodb.ts # MongoDB connection utility
 │ └── user.js (if needed)
-├── public/uploads/ # Uploaded images stored here
-├── styles/globals.css
 ├── .env.local # Contains env secrets (not committed)
 └── README.md
 
 skillmate api server need to be setup in separate directory
 ---
-
+skillmate api #server directory
+├── lib/
+│ ├── mongodb.js
+└──server.js
+└──.env
 ## 🧪 Getting Started (Local Setup)
 
 1. **Clone the repo**
@@ -79,3 +102,7 @@ MONGODB_URI=your_mongo_connection_string
 
 Run the development server
 npm run dev
+
+**to run skillmate api server**
+node server.js
+
